@@ -1,1 +1,118 @@
-<p>login works!</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="text-center mb-0">Connexion</h3>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Prénom -->
+              <div class="mb-3">
+                <label for="firstName" class="form-label">Prénom</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="Entrez votre prénom"
+                  [class.is-invalid]="loginForm.get('firstName')?.invalid && loginForm.get('firstName')?.touched"
+                >
+                <div 
+                  *ngIf="loginForm.get('firstName')?.invalid && loginForm.get('firstName')?.touched" 
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="loginForm.get('firstName')?.errors?.['required']">Le prénom est requis</div>
+                  <div *ngIf="loginForm.get('firstName')?.errors?.['minlength']">Le prénom doit contenir au moins 2 caractères</div>
+                </div>
+              </div>
+  
+              <!-- Nom -->
+              <div class="mb-3">
+                <label for="lastName" class="form-label">Nom</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Entrez votre nom"
+                  [class.is-invalid]="loginForm.get('lastName')?.invalid && loginForm.get('lastName')?.touched"
+                >
+                <div 
+                  *ngIf="loginForm.get('lastName')?.invalid && loginForm.get('lastName')?.touched" 
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="loginForm.get('lastName')?.errors?.['required']">Le nom est requis</div>
+                  <div *ngIf="loginForm.get('lastName')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</div>
+                </div>
+              </div>
+  
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text">&#64;</span>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email"
+                    formControlName="email"
+                    placeholder="nom@exemple.com"
+                    [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                  >
+                  <div 
+                    *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" 
+                    class="invalid-feedback"
+                  >
+                    <div *ngIf="loginForm.get('email')?.errors?.['required']">L'email est requis</div>
+                    <div *ngIf="loginForm.get('email')?.errors?.['email']">L'email n'est pas valide</div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Mot de passe -->
+              <div class="mb-4">
+                <label for="password" class="form-label">Mot de passe</label>
+                <div class="input-group">
+                  <input 
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="form-control" 
+                    id="password"
+                    formControlName="password"
+                    placeholder="Entrez votre mot de passe"
+                    [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                  >
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                  >
+                    <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                  </button>
+                  <div 
+                    *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
+                    class="invalid-feedback"
+                  >
+                    <div *ngIf="loginForm.get('password')?.errors?.['required']">Le mot de passe est requis</div>
+                    <div *ngIf="loginForm.get('password')?.errors?.['minlength']">Le mot de passe doit contenir au moins 6 caractères</div>
+                    <div *ngIf="loginForm.get('password')?.errors?.['pattern']">Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre</div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Bouton de soumission -->
+              <div class="d-grid">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary btn-lg"
+                  [disabled]="loginForm.invalid"
+                >
+                  Se connecter
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
