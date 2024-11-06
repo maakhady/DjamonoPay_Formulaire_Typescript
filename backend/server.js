@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const app = express();
@@ -23,7 +24,7 @@ sequelize.authenticate()
     .then(() => console.log('La connexion à MySQL a été établie avec succès.'))
     .catch(err => console.error('Impossible de se connecter à la base de données :', err));
 
-// Exemple de modèle Utilisateur, il doit correspondre à votre table existante
+// Modèle Utilisateur
 const User = sequelize.define('User', {
     nom: {
         type: DataTypes.STRING,
@@ -37,17 +38,23 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         unique: true,
         allowNull: false,
+        validate: {
+            isEmail: true, // Valide que c'est un email
+        }
     },
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: true, // Vérifie que le champ n'est pas vide
+        }
     },
 }, {
     tableName: 'users', // Assurez-vous que le nom de la table correspond à celui de votre base de données
     timestamps: false, // Si votre table n'a pas de colonnes `createdAt` et `updatedAt`
 });
 
-// Routes API
+// Route pour obtenir tous les utilisateurs
 app.get('/api/users', async (req, res) => {
     try {
         const users = await User.findAll();
@@ -57,13 +64,40 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+// Route pour créer un utilisateur avec hachage de mot de passe
 app.post('/api/users', async (req, res) => {
     const { nom, prenom, email, password } = req.body;
     try {
-        const user = await User.create({ nom, prenom, email, password });
+        const hashedPassword = await bcrypt.hash(password, 10); // Hachage du mot de passe
+        const user = await User.create({ nom, prenom, email, password: hashedPassword });
         res.status(201).json(user);
     } catch (error) {
         res.status(500).json({ error: 'Échec de la création de l’utilisateur' });
+    }
+});
+
+// Route pour valider si l'utilisateur existe en vérifiant nom, prénom, email et mot de passe
+app.post('/api/validate-user', async (req, res) => {
+    const { nom, prenom, email, password } = req.body;
+    try {
+        const user = await User.findOne({
+            where: {
+                nom,
+                prenom,
+                email
+            }
+        });
+
+        if (user) {
+            // Comparaison du mot de passe haché
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (isPasswordValid) {
+                return res.status(200).json({ exists: true });
+            }
+        }
+        return res.status(200).json({ exists: false });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur lors de la vérification de l’existence de l’utilisateur' });
     }
 });
 

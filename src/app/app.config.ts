@@ -18,6 +18,7 @@ import { provideHttpClient } from '@angular/common/http'
 
 // Importez les styles Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export const appConfig: ApplicationConfig = {
   providers: [
